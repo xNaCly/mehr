@@ -59,12 +59,6 @@ Installing a singular package:
 $ mehr install <package>
 ```
 
-Installing package version locked:
-
-```shell
-$ mehr install <package>@<version>
-```
-
 Installing multiple packages:
 
 ```shell
