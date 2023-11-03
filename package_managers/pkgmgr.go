@@ -56,7 +56,7 @@ func (p *PackageManager) Update() error {
 	return p.createCmd(p.update).Run()
 }
 
-func (p *PackageManager) Exists() bool {
-	_, err := exec.LookPath(p.Name)
-	return err == nil
+func (p *PackageManager) Exists() (string, bool) {
+	path, err := exec.LookPath(p.Name)
+	return path, err == nil
 }

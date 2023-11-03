@@ -19,7 +19,8 @@ var Managers = []*PackageManager{
 
 func Get() (*PackageManager, bool) {
 	for _, mgr := range Managers {
-		if mgr.Exists() {
+		if path, ok := mgr.Exists(); ok {
+			mgr.Name = path
 			return mgr, true
 		}
 	}

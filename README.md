@@ -197,6 +197,6 @@ locations:
 
 | Operating system | Priority 1                        | Priority 2                                         |
 | ---------------- | --------------------------------- | -------------------------------------------------- |
-| Linux like       | `$HOME/mehr.toml`                 | `$XDG_CONFIG_HOME/mehr/mehr.toml`                  |
+| Linux like       | `$XDG_CONFIG_HOME/mehr/mehr.toml` | `$HOME/mehr.toml`                                  |
 | MacOS            | `$XDG_CONFIG_HOME/mehr/mehr.toml` | `$HOME/Library/Application Support/mehr/mehr.toml` |
 | Windows          | `%AppData%/mehr/mehr.toml`        |                                                    |

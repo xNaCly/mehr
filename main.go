@@ -3,11 +3,14 @@ package main
 import (
 	"log"
 
-	packagemanagers "github.com/xnacly/mehr/package_managers"
+	"github.com/xnacly/mehr/config"
 )
 
 func main() {
-	if pkgMgr, ok := packagemanagers.Get(); ok {
-		log.Println(pkgMgr.Name)
+	confPath := config.LookUp()
+	conf, err := config.Get(confPath)
+	if err != nil {
+		log.Printf("%s, falling back to default", err)
 	}
+	log.Println(conf.PackageManager)
 }
