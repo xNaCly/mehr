@@ -3,7 +3,12 @@ package packagemanagers
 import (
 	"os"
 	"os/exec"
+	"strings"
+
+	"github.com/xnacly/mehr/log"
 )
+
+var defaultBuffer strings.Builder
 
 type Manager interface {
 	Install(packages []string) error
@@ -19,12 +24,13 @@ type SubCommand struct {
 }
 
 type PackageManager struct {
-	Name    string      // name of the executable
-	install *SubCommand // command to be executed for installing packages
-	upgrade *SubCommand // command to be executed for updating packages
-	remove  *SubCommand // command to be executed for removing packages
-	update  *SubCommand // command to be executed for updating source / fetching new package data
-	Options []string    // options for all sub commands
+	Name    string           // name of the executable
+	install *SubCommand      // command to be executed for installing packages
+	upgrade *SubCommand      // command to be executed for updating packages
+	remove  *SubCommand      // command to be executed for removing packages
+	update  *SubCommand      // command to be executed for updating source / fetching new package data
+	Options []string         // options for all sub commands
+	Buffer  *strings.Builder // buffer to write stdout to
 }
 
 func (p *PackageManager) createCmd(c *SubCommand, packages ...string) *exec.Cmd {
@@ -34,9 +40,14 @@ func (p *PackageManager) createCmd(c *SubCommand, packages ...string) *exec.Cmd 
 	args = append(args, c.Options...)
 	args = append(args, packages...)
 	cmd := exec.Command(p.Name, args...)
+
 	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	if p.Buffer == nil {
+		p.Buffer = &defaultBuffer
+	}
+	cmd.Stderr = p.Buffer
+	cmd.Stdout = p.Buffer
+	log.Info("running '%s %s'", p.Name, strings.Join(args, "  "))
 	return cmd
 }
 
