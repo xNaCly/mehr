@@ -3,6 +3,7 @@ package packagemanagers
 var Managers = []*PackageManager{
 	{
 		Name:    "apt",
+		Options: []string{"-y"}, // skips [Y/n] confirmation prompts
 		install: &SubCommand{Name: "install"},
 		update:  &SubCommand{Name: "update"},
 		upgrade: &SubCommand{Name: "upgrade"},
@@ -10,10 +11,10 @@ var Managers = []*PackageManager{
 	},
 	{
 		Name:    "pacman",
-		install: &SubCommand{Name: "", Options: []string{"-S"}},
-		update:  &SubCommand{Name: "", Options: []string{"-Sy"}},
-		upgrade: &SubCommand{Name: "", Options: []string{"-Su"}},
-		remove:  &SubCommand{Name: "", Options: []string{"-Rs"}},
+		install: &SubCommand{Name: "-S", Options: []string{"--no-confirm"}},
+		update:  &SubCommand{Name: "-Sy"},
+		upgrade: &SubCommand{Name: "-Su", Options: []string{"--no-confirm"}},
+		remove:  &SubCommand{Name: "-Rs", Options: []string{"--no-confirm"}},
 	},
 }
 
