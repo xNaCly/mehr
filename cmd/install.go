@@ -1,7 +1,5 @@
 package cmd
 
-// TODO: lock file
-
 import (
 	"log"
 

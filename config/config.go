@@ -31,6 +31,11 @@ func LookUp() string {
 	return filepath.Join(confHome, "mehr", "mehr.toml")
 }
 
+func CreateDirIfNotExist() {
+	path := LookUp()
+	os.MkdirAll(filepath.Dir(path), 0777)
+}
+
 // reads configuration at 'path', decodes to Configuration struct
 func Get(path string) (*types.Configuration, error) {
 	if configCache != nil && configCache.path == path {

@@ -1,4 +1,9 @@
+// contains all types used in the mehr project
 package types
+
+type LockFile struct {
+	Packages map[string]*Package `toml:"packages"`
+}
 
 // configure a package
 type PackageConfig struct {

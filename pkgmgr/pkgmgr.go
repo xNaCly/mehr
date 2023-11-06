@@ -1,3 +1,4 @@
+// abstracts package managers away in a operating system independent way
 package pkgmgr
 
 import (
@@ -5,6 +6,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/xnacly/mehr/lock"
 	"github.com/xnacly/mehr/log"
 	"github.com/xnacly/mehr/types"
 )
@@ -12,14 +14,14 @@ import (
 var defaultBuffer strings.Builder
 
 type PackageManager struct {
-	Name                 string            // name of the executable
-	install              *types.SubCommand // command to be executed for installing packages
-	upgrade              *types.SubCommand // command to be executed for updating packages
-	remove               *types.SubCommand // command to be executed for removing packages
-	update               *types.SubCommand // command to be executed for updating source / fetching new package data
-	options              []string          // options for all sub commands
-	buffer               *strings.Builder  // buffer to write stdout to
-	formatPkgWithVersion func(name string, version string) string
+	Name                 string                                   // name of the executable
+	install              *types.SubCommand                        // command to be executed for installing packages
+	upgrade              *types.SubCommand                        // command to be executed for updating packages
+	remove               *types.SubCommand                        // command to be executed for removing packages
+	update               *types.SubCommand                        // command to be executed for updating source / fetching new package data
+	options              []string                                 // options for all sub commands
+	buffer               *strings.Builder                         // buffer to write stdout to
+	formatPkgWithVersion func(name string, version string) string // used to format every package before attempting to install it
 }
 
 func (p *PackageManager) createCmd(c *types.SubCommand, packages ...string) *exec.Cmd {
@@ -50,6 +52,10 @@ func (p *PackageManager) Install(packages map[string]*types.Package) error {
 			pkgs[i] = k
 		}
 		i++
+		err := lock.Write(k, v)
+		if err != nil {
+			return err
+		}
 	}
 	return p.createCmd(p.install, pkgs...).Run()
 }
@@ -72,5 +78,8 @@ func (p *PackageManager) Exists() (string, bool) {
 }
 
 func (p *PackageManager) Output() string {
+	if p.buffer == nil {
+		return ""
+	}
 	return p.buffer.String()
 }
