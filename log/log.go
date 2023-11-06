@@ -2,8 +2,8 @@
 package log
 
 import (
+	"fmt"
 	"log"
-	"strings"
 )
 
 const (
@@ -14,18 +14,34 @@ const (
 	ansi_magenta = "\033[95m"
 )
 
-func print(prefix []string, format string, v ...any) {
-	log.Printf(strings.Join(prefix, "")+format, v...)
+const (
+	errPrefix  = ansi_red + "err: " + ansi_reset
+	infoPrefix = ansi_blue + "info: " + ansi_reset
+	warnPrefix = ansi_yellow + "warn: " + ansi_reset
+)
+
+func printf(prefix string, format string, v ...any) {
+	log.Printf(prefix+format, v...)
 }
 
-func Info(format string, v ...any) {
-	print([]string{ansi_blue, "info: ", ansi_reset}, format, v...)
+func Infof(format string, v ...any) {
+	printf(infoPrefix, format, v...)
 }
 
-func Warn(format string, v ...any) {
-	print([]string{ansi_yellow, "warn: ", ansi_reset}, format, v...)
+func Warnf(format string, v ...any) {
+	printf(warnPrefix, format, v...)
 }
 
-func Error(format string, v ...any) {
-	print([]string{ansi_red, "err: ", ansi_reset}, format, v...)
+func Warn(v ...any) {
+	fmt.Print(warnPrefix)
+	log.Println(v...)
+}
+
+func Errorf(format string, v ...any) {
+	printf(errPrefix, format, v...)
+}
+
+func Error(v ...any) {
+	fmt.Print(errPrefix)
+	log.Println(v...)
 }
