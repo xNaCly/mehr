@@ -35,7 +35,7 @@ type Configuration struct {
 }
 
 type Manager interface {
-	Install(packages []Package) error
+	Install(packages []Package) (error, int)
 	Upgrade(packages []string) error
 	Remove(packages []string) error
 	Exists() bool

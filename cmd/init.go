@@ -31,15 +31,12 @@ Create the default configuration file at the specified path:
     init testdir 
     `,
 	Run: func(cmd *cobra.Command, args []string) {
-		configPath, err := cmd.Flags().GetString("config")
-		if err != nil {
-			configPath = config.LookUp()
-		}
+		configPath := config.LookUp()
 
 		if len(args) == 1 {
 			t, err := filepath.Abs(filepath.Join(args[0], "mehr.toml"))
 			if err != nil {
-				l.Errorf("Failed to create an absolute path represenation of %q: %s", configPath, err)
+				l.Errorf("Failed to create an absolute path representation of %q: %s", configPath, err)
 				return
 			}
 			configPath = t
@@ -51,7 +48,7 @@ Create the default configuration file at the specified path:
 				return
 			}
 			// we ignore the error here because the flag is false if an error
-			// occured
+			// occurred
 			force, _ := cmd.Flags().GetBool("force")
 			if !force {
 				l.Errorf("Configuration file %q already exists, use '--force' to override this check", configPath)
@@ -60,7 +57,7 @@ Create the default configuration file at the specified path:
 			l.Warnf("Got force, overwriting already existing configuration file")
 		}
 
-		err = os.MkdirAll(filepath.Dir(configPath), 0777)
+		err := os.MkdirAll(filepath.Dir(configPath), 0777)
 		if err != nil {
 			l.Errorf("Failed to create all directories to configuration file: %q", err)
 			return

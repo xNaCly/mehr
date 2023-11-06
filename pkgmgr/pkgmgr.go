@@ -42,22 +42,27 @@ func (p *PackageManager) createCmd(c *types.SubCommand, packages ...string) *exe
 	return cmd
 }
 
-func (p *PackageManager) Install(packages map[string]*types.Package) error {
-	pkgs := make([]string, len(packages))
-	i := 0
+func (p *PackageManager) Install(packages map[string]*types.Package) (error, int) {
+	pkgs := make([]string, 0)
 	for k, v := range packages {
-		if v.Version != "" {
-			pkgs[i] = p.formatPkgWithVersion(k, v.Version)
-		} else {
-			pkgs[i] = k
+		if _, ok := lock.Get().Packages[k]; ok {
+			log.Warnf("Package %s already installed, skipping", k)
+			continue
 		}
-		i++
+		if v.Version != "" {
+			pkgs = append(pkgs, p.formatPkgWithVersion(k, v.Version))
+		} else {
+			pkgs = append(pkgs, k)
+		}
 		err := lock.Write(k, v)
 		if err != nil {
-			return err
+			return err, 0
 		}
 	}
-	return p.createCmd(p.install, pkgs...).Run()
+	if len(pkgs) == 0 {
+		return nil, 0
+	}
+	return p.createCmd(p.install, pkgs...).Run(), len(pkgs)
 }
 
 func (p *PackageManager) Upgrade(packages ...string) error {

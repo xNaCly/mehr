@@ -43,10 +43,7 @@ packages not found in the configuration.
 
 See 'mehr sync help' for more information.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		configPath, err := cmd.Flags().GetString("config")
-		if err != nil {
-			configPath = config.LookUp()
-		}
+		configPath := config.LookUp()
 
 		conf, err := config.Get(configPath)
 		if err != nil {
@@ -75,11 +72,11 @@ See 'mehr sync help' for more information.`,
 		}
 
 		if len(args) == 0 {
-			err := manager.Install(conf.Packages)
+			err, amount := manager.Install(conf.Packages)
 			if err != nil {
 				l.Error("failed to install packages", err)
 				log.Print(manager.Output())
-			} else {
+			} else if amount > 0 {
 				l.Infof("Installed %d packages", len(conf.Packages))
 			}
 		} else {
@@ -87,11 +84,11 @@ See 'mehr sync help' for more information.`,
 			for _, pkg := range args {
 				pkgs[pkg] = &types.Package{}
 			}
-			err := manager.Install(pkgs)
+			err, amount := manager.Install(pkgs)
 			if err != nil {
 				l.Error("failed to install packages", err)
 				log.Print(manager.Output())
-			} else {
+			} else if amount > 0 {
 				l.Infof("Installed %d packages", len(conf.Packages))
 			}
 		}

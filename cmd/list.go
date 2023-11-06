@@ -21,10 +21,7 @@ var listCmd = &cobra.Command{
 	Short: "List installed packages",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		configPath, err := cmd.Flags().GetString("config")
-		if err != nil {
-			configPath = config.LookUp()
-		}
+		configPath := config.LookUp()
 
 		conf, err := config.Get(configPath)
 		if err != nil {

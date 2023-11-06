@@ -17,10 +17,7 @@ var rootCmd = &cobra.Command{
 	Long: `A Fast and Flexible package and configuration manager build in Go. 
 Full configuration is available at https://github.com/xnacly/mehr`,
 	Run: func(cmd *cobra.Command, args []string) {
-		configPath, err := cmd.Flags().GetString("config")
-		if err != nil {
-			configPath = config.LookUp()
-		}
+		configPath := config.LookUp()
 		conf, err := config.Get(configPath)
 
 		if err != nil {
@@ -32,7 +29,6 @@ Full configuration is available at https://github.com/xnacly/mehr`,
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringP("config", "c", config.LookUp(), `configuration file`)
 	rootCmd.PersistentFlags().BoolP("force", "f", false, "skip checks, may break system configuration")
 }
 
