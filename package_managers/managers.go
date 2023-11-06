@@ -16,6 +16,18 @@ var Managers = []*PackageManager{
 		upgrade: &SubCommand{Name: "-Su", Options: []string{"--no-confirm"}},
 		remove:  &SubCommand{Name: "-Rs", Options: []string{"--no-confirm"}},
 	},
+	{
+		Name: "npm",
+		install: &SubCommand{Name: "install", Options: []string{"-g"}},
+		update:  &SubCommand{Name: "update", Options: []string{"-g"}},
+		remove:  &SubCommand{Name: "uninstall", Options: []string{"-g"}},
+	},
+	{
+		Name: "pnpm",
+		install: &SubCommand{Name: "add", Options: []string{"-g"}},
+		update:  &SubCommand{Name: "update", Options: []string{"-g"}},
+		remove:  &SubCommand{Name: "remove", Options: []string{"-g"}},
+	},
 }
 
 func Get() (*PackageManager, bool) {
