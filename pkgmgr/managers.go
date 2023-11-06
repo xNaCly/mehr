@@ -25,6 +25,18 @@ var Managers = []*PackageManager{
 			return name + "=" + version
 		},
 	},
+	{
+		Name: "npm",
+		install: &types.SubCommand{Name: "install", Options: []string{"-g"}},
+		update:  &types.SubCommand{Name: "update", Options: []string{"-g"}},
+		remove:  &types.SubCommand{Name: "uninstall", Options: []string{"-g"}},
+	},
+	{
+		Name: "pnpm",
+		install: &types.SubCommand{Name: "add", Options: []string{"-g"}},
+		update:  &types.SubCommand{Name: "update", Options: []string{"-g"}},
+		remove:  &types.SubCommand{Name: "remove", Options: []string{"-g"}},
+	},
 }
 
 // returns the package manager for name if found, otherwise errors
