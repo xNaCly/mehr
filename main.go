@@ -7,6 +7,6 @@ import (
 )
 
 func main() {
-	log.SetFlags(log.Ltime)
+	log.SetFlags(0)
 	cmd.Root()
 }
