@@ -1,12 +1,4 @@
-package config
-
-import (
-	"errors"
-	"fmt"
-	"os"
-
-	packagemanagers "github.com/xnacly/mehr/package_managers"
-)
+package types
 
 // configure a package
 type PackageConfig struct {
@@ -37,24 +29,16 @@ type Configuration struct {
 	SystemConfig   *SystemConfig       `toml:"config"`          // configure the system and the installed packages
 }
 
-// validates the struct and fills empty fields
-func (c *Configuration) Ok() error {
-	if c.PackageManager == "" || c.PackageManager == "auto" {
-		if mgr, ok := packagemanagers.Get(); ok {
-			c.PackageManager = mgr.Name
-		} else {
-			return errors.New("No package manager found")
-		}
-	}
-	if c.SystemConfig == nil {
-		c.SystemConfig = &SystemConfig{}
-	}
-	if c.SystemConfig.Path == "" {
-		confHome, err := os.UserConfigDir()
-		if err != nil {
-			return fmt.Errorf("Failed to get user config dir: %w", err)
-		}
-		c.SystemConfig.Path = confHome
-	}
-	return nil
+type Manager interface {
+	Install(packages []Package) error
+	Upgrade(packages []string) error
+	Remove(packages []string) error
+	Exists() bool
+	Update() error
+	Output() string
+}
+
+type SubCommand struct {
+	Name    string
+	Options []string
 }
