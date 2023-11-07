@@ -50,15 +50,7 @@ See 'mehr sync help' for more information.`,
 		}
 
 		var manager *pkgmgr.PackageManager
-		if conf.PackageManager != "" {
-			var err error
-			mgr, err := pkgmgr.GetByName(conf.PackageManager)
-			if err != nil {
-				l.Error(err)
-				return
-			}
-			manager = mgr
-		} else {
+		if conf.PackageManager == "auto" || conf.PackageManager == "" {
 			mgr, ok := pkgmgr.Get()
 
 			if !ok {
@@ -66,6 +58,14 @@ See 'mehr sync help' for more information.`,
 				return
 			}
 
+			manager = mgr
+		} else {
+			var err error
+			mgr, err := pkgmgr.GetByName(conf.PackageManager)
+			if err != nil {
+				l.Error(err)
+				return
+			}
 			manager = mgr
 		}
 
