@@ -28,6 +28,11 @@ func Infof(format string, v ...any) {
 	printf(infoPrefix, format, v...)
 }
 
+func Info(v ...any) {
+	fmt.Print(infoPrefix)
+	log.Println(v...)
+}
+
 func Warnf(format string, v ...any) {
 	printf(warnPrefix, format, v...)
 }
