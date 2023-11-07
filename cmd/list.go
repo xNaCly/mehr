@@ -19,7 +19,11 @@ func init() {
 var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List installed packages",
-	Args:  cobra.NoArgs,
+	Example: `
+    list -t
+    list -p
+    `,
+	Args: cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		configPath := config.LookUp()
 
@@ -46,11 +50,14 @@ var listCmd = &cobra.Command{
 }
 
 func printPackages(packages map[string]*types.Package) {
+	i := 1
 	for k, v := range packages {
+		fmt.Print("(", i, ") ")
 		if v.Version != "" {
 			fmt.Println(k + "@" + v.Version)
 		} else {
 			fmt.Println(k)
 		}
+		i++
 	}
 }
