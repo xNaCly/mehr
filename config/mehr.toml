@@ -15,9 +15,9 @@ package-manager = "auto"
     # lock a package on a specific version, mehr will not install anything
     # higher or lower than this, throws an error if the repos of the used
     # package manager do not include the specific version
-    version = "0.30.1"
+    version = "0.21.2"
   [packages.neovim]
-   # packages without version or url are also installed
+    # packages without version or url are also installed
 
 # configure your installed packages
 [config]
