@@ -25,13 +25,12 @@ type PackageManager struct {
 }
 
 func (p *PackageManager) createCmd(c *types.SubCommand, packages ...string) error {
-	// TODO: support for doas
 	args := []string{p.Name, c.Name}
 	args = append(args, p.options...)
 	args = append(args, c.Options...)
 	args = append(args, packages...)
 
-	log.Infof("running '%q'", strings.Join(args, " "))
+	log.Infof("running %q", strings.Join(args, " "))
 	cmd := exec.CommandContext(context.Background(), "sudo", args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
@@ -97,8 +96,21 @@ func (p *PackageManager) Upgrade(packages map[string]*types.Package) (error, int
 	return nil, len(pkgs)
 }
 
-func (p *PackageManager) Remove(packages ...string) error {
-	return p.createCmd(p.remove, packages...)
+func (p *PackageManager) Remove(packages ...string) (error, int) {
+	if len(packages) == 0 {
+		return nil, 0
+	}
+	err := p.createCmd(p.remove, packages...)
+	if err != nil {
+		return err, 0
+	}
+	for _, pkg := range packages {
+		err := lock.RemovePackage(pkg)
+		if err != nil {
+			return err, 0
+		}
+	}
+	return nil, len(packages)
 }
 
 func (p *PackageManager) Update() error {
