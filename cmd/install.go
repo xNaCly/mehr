@@ -13,22 +13,22 @@ func init() {
 }
 
 var installCmd = &cobra.Command{
-	Use:     "install",
-	Short:   "Install packages",
-	Example: "install [package...]",
+	Use:   "install",
+	Short: "Install packages",
+	Example: `
+    install neovim
+    install neovim kitty
+    install 
+    `,
 	Long: `Install a single, multiple or all configured packages via: 
 
 Install a single package:
 
     install [package]
 
-    install neovim
-
 Install multiple packages:
 
     install [package...]
-
-    install neovim kitty
 
 Install all packages in the current configuration:
 
