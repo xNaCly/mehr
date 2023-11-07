@@ -40,7 +40,6 @@ type Manager interface {
 	Remove(packages []string) error
 	Exists() bool
 	Update() error
-	Output() string
 }
 
 type SubCommand struct {

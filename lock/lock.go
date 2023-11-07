@@ -9,19 +9,17 @@ import (
 
 	"github.com/BurntSushi/toml"
 
-	l "github.com/xnacly/mehr/log"
 	"github.com/xnacly/mehr/types"
 )
 
+var path = LookUp()
 var lock *types.LockFile = &types.LockFile{Packages: map[string]*types.Package{}}
 
 func init() {
-	_, err := toml.DecodeFile(LookUp(), lock)
-	if err != nil {
-		l.Errorf("Failed to decode lock file: %s", err)
-	}
+	toml.DecodeFile(path, lock)
 }
 
+// path to the lock file
 func LookUp() string {
 	confHome, _ := os.UserConfigDir()
 	return filepath.Join(confHome, "mehr", "lock.toml")
@@ -58,17 +56,19 @@ func Get() *types.LockFile {
 // adds entry to the lock file, writes it to disk and updates the cached lock file
 func Write(name string, entry *types.Package) error {
 	lock.Packages[name] = entry
-	path := LookUp()
 	val, err := os.Stat(path)
 	if err == nil && val.IsDir() {
 		return fmt.Errorf("Lockfile %q is a directory, how did that happen?", path)
 	} else {
 		os.MkdirAll(filepath.Dir(path), 0777)
 	}
+
 	file, err := os.Create(path)
 	if err != nil {
 		return fmt.Errorf("Failed to open %q, %s", path, err)
 	}
+	defer file.Close()
+
 	e := toml.NewEncoder(file)
 	return e.Encode(lock)
 }

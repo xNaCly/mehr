@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"log"
-
 	"github.com/spf13/cobra"
 	"github.com/xnacly/mehr/config"
 	l "github.com/xnacly/mehr/log"
@@ -75,9 +73,10 @@ See 'mehr sync help' for more information.`,
 			err, amount := manager.Install(conf.Packages)
 			if err != nil {
 				l.Error("failed to install packages", err)
-				log.Print(manager.Output())
 			} else if amount > 0 {
 				l.Infof("Installed %d packages", len(conf.Packages))
+			} else {
+				l.Infof("Did nothing, exiting")
 			}
 		} else {
 			pkgs := map[string]*types.Package{}
@@ -87,7 +86,6 @@ See 'mehr sync help' for more information.`,
 			err, amount := manager.Install(pkgs)
 			if err != nil {
 				l.Error("failed to install packages", err)
-				log.Print(manager.Output())
 			} else if amount > 0 {
 				l.Infof("Installed %d packages", len(conf.Packages))
 			}

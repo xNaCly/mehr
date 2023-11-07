@@ -17,30 +17,14 @@ var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Initialise mehr",
 	Args:  cobra.MaximumNArgs(1),
-	Long: `Initialise mehr by creating a new mehr.toml at the default configuration location or the specified directory with:
+	Long: `Initialise mehr by creating a new mehr.toml at the default configuration location
+
 Initialise the whole system:
 
     init 
-
-Create the default configuration file at the specified path:
-
-    init <path>
-
-    init .
-
-    init testdir 
-    `,
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		configPath := config.LookUp()
-
-		if len(args) == 1 {
-			t, err := filepath.Abs(filepath.Join(args[0], "mehr.toml"))
-			if err != nil {
-				l.Errorf("Failed to create an absolute path representation of %q: %s", configPath, err)
-				return
-			}
-			configPath = t
-		}
 
 		if val, err := os.Stat(configPath); err == nil {
 			if val.IsDir() {
