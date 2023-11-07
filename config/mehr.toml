@@ -7,7 +7,7 @@
 
 # specify a package manager to use, if 'auto' or empty fallback to auto
 # detection
-package-manager = "/usr/bin/pacman"
+package-manager = "auto"
 
 # configure all packages you require to be permanently installed on your system
 [packages]

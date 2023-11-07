@@ -28,8 +28,6 @@ func IsRoot() bool {
 
 // returns path the mehr config is located
 func LookUp() string {
-	// TODO: XDG_CONFIG_HOME is undefined in sudo env, modified to
-	// /root/.config/ meaning our config does not live at the correct path.
 	confHome, _ := os.UserConfigDir()
 	return filepath.Join(confHome, "mehr", "mehr.toml")
 }
@@ -44,17 +42,22 @@ func Get(path string) (*types.Configuration, error) {
 	if configCache != nil {
 		return configCache, nil
 	}
-	c, err := ValidateConfig(&types.Configuration{})
-	if err != nil {
-		return c, err
-	}
+
+	c := &types.Configuration{}
+
 	out, err := os.ReadFile(path)
 	if err != nil {
-		return c, fmt.Errorf("Failed to read configuration file, using fallback: %w", err)
+		return c, fmt.Errorf("Failed to read configuration file: %w", err)
 	}
+
 	_, err = toml.Decode(string(out), c)
 	if err != nil {
 		return c, fmt.Errorf("Failed to decode configuration file: %w", err)
+	}
+
+	err = ValidateConfig(c)
+	if err != nil {
+		return c, err
 	}
 
 	configCache = c
@@ -62,12 +65,12 @@ func Get(path string) (*types.Configuration, error) {
 }
 
 // validates the struct and fills empty fields
-func ValidateConfig(c *types.Configuration) (*types.Configuration, error) {
+func ValidateConfig(c *types.Configuration) error {
 	if c.PackageManager == "" || c.PackageManager == "auto" {
 		if mgr, ok := pkgmgr.Get(); ok {
 			c.PackageManager = mgr.Name
 		} else {
-			return nil, errors.New("No package manager found")
+			return errors.New("No package manager found")
 		}
 	}
 	if c.SystemConfig == nil {
@@ -76,9 +79,9 @@ func ValidateConfig(c *types.Configuration) (*types.Configuration, error) {
 	if c.SystemConfig.Path == "" {
 		confHome, err := os.UserConfigDir()
 		if err != nil {
-			return nil, fmt.Errorf("Failed to get user config dir: %w", err)
+			return fmt.Errorf("Failed to get user config dir: %w", err)
 		}
 		c.SystemConfig.Path = confHome
 	}
-	return c, nil
+	return nil
 }

@@ -39,8 +39,8 @@ func Permanent(config *types.Configuration, lock *types.LockFile) map[string]*ty
 // return all temporary installed packages on the system
 func Temporary(config *types.Configuration, lock *types.LockFile) map[string]*types.Package {
 	temp := map[string]*types.Package{}
-	for k, v := range config.Packages {
-		if _, ok := lock.Packages[k]; !ok {
+	for k, v := range lock.Packages {
+		if _, ok := config.Packages[k]; !ok {
 			temp[k] = v
 		}
 	}
