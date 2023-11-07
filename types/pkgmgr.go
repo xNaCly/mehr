@@ -1,9 +1,9 @@
 package types
 
 type Manager interface {
-	Install(packages []Package) (error, int)
-	Upgrade(packages []string) error
-	Remove(packages []string) error
+	Install(packages map[string]*Package) (error, int)
+	Upgrade(packages map[string]*Package) (error, int)
+	Remove(packages ...string) (error, int)
 	Exists() bool
 	Update() error
 }

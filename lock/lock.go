@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/BurntSushi/toml"
 
@@ -53,9 +54,7 @@ func Get() *types.LockFile {
 	return lock
 }
 
-// adds entry to the lock file, writes it to disk and updates the cached lock file
-func Write(name string, entry *types.Package) error {
-	lock.Packages[name] = entry
+func writeToDisk() error {
 	val, err := os.Stat(path)
 	if err == nil && val.IsDir() {
 		return fmt.Errorf("Lockfile %q is a directory, how did that happen?", path)
@@ -71,4 +70,20 @@ func Write(name string, entry *types.Package) error {
 
 	e := toml.NewEncoder(file)
 	return e.Encode(lock)
+}
+
+func UpdateTimeStamp() error {
+	lock.LastUpdate = time.Now()
+	return writeToDisk()
+}
+
+// adds entry to the lock file, writes it to disk and updates the cached lock file
+func AddPackage(name string, entry *types.Package) error {
+	lock.Packages[name] = entry
+	return writeToDisk()
+}
+
+func RemovePackage(name string) error {
+	delete(lock.Packages, name)
+	return writeToDisk()
 }

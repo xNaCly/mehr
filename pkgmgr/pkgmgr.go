@@ -60,7 +60,7 @@ func (p *PackageManager) Install(packages map[string]*types.Package) (error, int
 		return err, 0
 	}
 	for k, v := range packages {
-		err := lock.Write(k, v)
+		err := lock.AddPackage(k, v)
 		if err != nil {
 			return err, 0
 		}
@@ -68,8 +68,33 @@ func (p *PackageManager) Install(packages map[string]*types.Package) (error, int
 	return nil, len(pkgs)
 }
 
-func (p *PackageManager) Upgrade(packages ...string) error {
-	return p.createCmd(p.upgrade, packages...)
+func (p *PackageManager) Upgrade(packages map[string]*types.Package) (error, int) {
+	pkgs := make([]string, 0)
+	for k, v := range packages {
+		if _, ok := lock.Get().Packages[k]; !ok {
+			log.Warnf("Package %s@%s not installed, skipping", k, v.Version)
+			continue
+		}
+		if v.Version != "" {
+			pkgs = append(pkgs, p.formatPkgWithVersion(k, v.Version))
+		} else {
+			pkgs = append(pkgs, k)
+		}
+	}
+	if len(pkgs) == 0 {
+		return nil, 0
+	}
+	err := p.createCmd(p.upgrade, pkgs...)
+	if err != nil {
+		return err, 0
+	}
+	for k, v := range packages {
+		err := lock.AddPackage(k, v)
+		if err != nil {
+			return err, 0
+		}
+	}
+	return nil, len(pkgs)
 }
 
 func (p *PackageManager) Remove(packages ...string) error {

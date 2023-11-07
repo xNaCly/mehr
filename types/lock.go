@@ -1,5 +1,8 @@
 package types
 
+import "time"
+
 type LockFile struct {
-	Packages map[string]*Package `toml:"packages"`
+	LastUpdate time.Time           `toml:"last-update"`
+	Packages   map[string]*Package `toml:"packages"`
 }
