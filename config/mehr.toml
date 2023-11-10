@@ -19,6 +19,27 @@ package-manager = "auto"
   [packages.neovim]
     # packages without version or url are also installed
 
+# WARN: this is not yet implemented
+#
+# commands are used to run executables found in $PATH of the system
+[command]
+ # name of the command, executable with 'mehr r <command>', here 'mehr r run'
+ [command.run]
+  cmd = "go run ."
+ [command.generate]
+  cmd = "go generate"
+  # changes the working directory of this command to the rhs below
+  cwd = ".."
+ [command."build:linux/amd64"]
+  cmd = "go build ."
+  # set environment variables
+  [command."build:linux/amd64".env]   
+   GOOS = "linux"      
+   GOARCH = "amd64"
+
+
+# WARN: this is not yet implemented
+#
 # configure your installed packages
 [config]
   # top level configuration path, all other files are created relative to this
