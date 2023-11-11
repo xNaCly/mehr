@@ -17,10 +17,16 @@ var rootCmd = &cobra.Command{
 	Long: `A Fast and Flexible package and configuration manager build in Go. 
 Full configuration is available at https://github.com/xnacly/mehr`,
 	Run: func(cmd *cobra.Command, args []string) {
-		configPath, err := cmd.Flags().GetString("config")
-		if err != nil {
-			configPath = config.LookUp()
+		force, _ := cmd.Flags().GetBool("force")
+		if config.IsRoot() {
+			msg := "mehr started with elevated privileges, this can damage your system and requires a separate configuration,"
+			if !force {
+				l.Error(msg, "use --force to omit this check, exiting")
+				return
+			}
+			l.Warn(msg, "got --force, not exiting")
 		}
+		configPath := config.LookUp()
 		conf, err := config.Get(configPath)
 
 		if err != nil {
@@ -32,7 +38,6 @@ Full configuration is available at https://github.com/xnacly/mehr`,
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringP("config", "c", config.LookUp(), `configuration file`)
 	rootCmd.PersistentFlags().BoolP("force", "f", false, "skip checks, may break system configuration")
 }
 

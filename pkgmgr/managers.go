@@ -12,15 +12,21 @@ var Managers = []*PackageManager{
 		options: []string{"-y"}, // skips [Y/n] confirmation prompts
 		install: &types.SubCommand{Name: "install"},
 		update:  &types.SubCommand{Name: "update"},
-		upgrade: &types.SubCommand{Name: "upgrade"},
-		remove:  &types.SubCommand{Name: "remove"},
+		upgrade: &types.SubCommand{Name: "upgrade", Options: []string{
+			"--only-upgrade", // only upgrades the specified packages
+		}},
+		remove: &types.SubCommand{Name: "remove"},
+		formatPkgWithVersion: func(name, version string) string {
+			return name + "=" + version
+		},
 	},
 	{
 		Name:    "pacman",
-		install: &types.SubCommand{Name: "-S", Options: []string{"--noconfirm"}},
+		options: []string{"--noconfirm"}, // skips [Y/n] confirmation prompts
+		install: &types.SubCommand{Name: "-S"},
 		update:  &types.SubCommand{Name: "-Sy"},
-		upgrade: &types.SubCommand{Name: "-Su", Options: []string{"--noconfirm"}},
-		remove:  &types.SubCommand{Name: "-Rs", Options: []string{"--noconfirm"}},
+		upgrade: &types.SubCommand{Name: "-Su"},
+		remove:  &types.SubCommand{Name: "-Rs"},
 		formatPkgWithVersion: func(name, version string) string {
 			return name + "=" + version
 		},

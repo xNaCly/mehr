@@ -1,10 +1,6 @@
 package cmd
 
-// TODO: lock file
-
 import (
-	"log"
-
 	"github.com/spf13/cobra"
 	"github.com/xnacly/mehr/config"
 	l "github.com/xnacly/mehr/log"
@@ -17,22 +13,22 @@ func init() {
 }
 
 var installCmd = &cobra.Command{
-	Use:     "install",
-	Short:   "Install packages",
-	Example: "install [package...]",
+	Use:   "install",
+	Short: "Install packages",
+	Example: `
+    install neovim
+    install neovim kitty
+    install 
+    `,
 	Long: `Install a single, multiple or all configured packages via: 
 
 Install a single package:
 
     install [package]
 
-    install neovim
-
 Install multiple packages:
 
     install [package...]
-
-    install neovim kitty
 
 Install all packages in the current configuration:
 
@@ -45,10 +41,7 @@ packages not found in the configuration.
 
 See 'mehr sync help' for more information.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		configPath, err := cmd.Flags().GetString("config")
-		if err != nil {
-			configPath = config.LookUp()
-		}
+		configPath := config.LookUp()
 
 		conf, err := config.Get(configPath)
 		if err != nil {
@@ -57,15 +50,7 @@ See 'mehr sync help' for more information.`,
 		}
 
 		var manager *pkgmgr.PackageManager
-		if conf.PackageManager != "" {
-			var err error
-			mgr, err := pkgmgr.GetByName(conf.PackageManager)
-			if err != nil {
-				l.Error(err)
-				return
-			}
-			manager = mgr
-		} else {
+		if conf.PackageManager == "auto" || conf.PackageManager == "" {
 			mgr, ok := pkgmgr.Get()
 
 			if !ok {
@@ -74,26 +59,34 @@ See 'mehr sync help' for more information.`,
 			}
 
 			manager = mgr
+		} else {
+			var err error
+			mgr, err := pkgmgr.GetByName(conf.PackageManager)
+			if err != nil {
+				l.Error(err)
+				return
+			}
+			manager = mgr
 		}
 
 		if len(args) == 0 {
-			err := manager.Install(conf.Packages)
+			err, amount := manager.Install(conf.Packages)
 			if err != nil {
 				l.Error("failed to install packages", err)
-				log.Print(manager.Output())
-			} else {
+			} else if amount > 0 {
 				l.Infof("Installed %d packages", len(conf.Packages))
+			} else {
+				l.Infof("Did nothing, exiting")
 			}
 		} else {
 			pkgs := map[string]*types.Package{}
 			for _, pkg := range args {
 				pkgs[pkg] = &types.Package{}
 			}
-			err := manager.Install(pkgs)
+			err, amount := manager.Install(pkgs)
 			if err != nil {
 				l.Error("failed to install packages", err)
-				log.Print(manager.Output())
-			} else {
+			} else if amount > 0 {
 				l.Infof("Installed %d packages", len(conf.Packages))
 			}
 		}

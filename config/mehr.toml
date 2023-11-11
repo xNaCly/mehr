@@ -7,7 +7,7 @@
 
 # specify a package manager to use, if 'auto' or empty fallback to auto
 # detection
-package-manager = "/usr/bin/pacman"
+package-manager = "auto"
 
 # configure all packages you require to be permanently installed on your system
 [packages]
@@ -15,10 +15,31 @@ package-manager = "/usr/bin/pacman"
     # lock a package on a specific version, mehr will not install anything
     # higher or lower than this, throws an error if the repos of the used
     # package manager do not include the specific version
-    version = "0.30.1"
+    version = "0.21.2"
   [packages.neovim]
-   # packages without version or url are also installed
+    # packages without version or url are also installed
 
+# WARN: this is not yet implemented
+#
+# commands are used to run executables found in $PATH of the system
+[command]
+ # name of the command, executable with 'mehr r <command>', here 'mehr r run'
+ [command.run]
+  cmd = "go run ."
+ [command.generate]
+  cmd = "go generate"
+  # changes the working directory of this command to the rhs below
+  cwd = ".."
+ [command."build:linux/amd64"]
+  cmd = "go build ."
+  # set environment variables
+  [command."build:linux/amd64".env]   
+   GOOS = "linux"      
+   GOARCH = "amd64"
+
+
+# WARN: this is not yet implemented
+#
 # configure your installed packages
 [config]
   # top level configuration path, all other files are created relative to this

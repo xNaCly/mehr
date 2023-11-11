@@ -14,19 +14,17 @@ The goal is to provide a singular interface for managing packages. This interfac
 - minimal and well designed configuration file, see [TOML](https://toml.io/en/)
 - support as many package managers and thus systems as possible
 - automatically detect package managers
-- support all package management interactions: install, update, remove
+- support all package management interactions: install, upgrade, remove
 - support configuring packages as well as installing them
 - extensive documentation
 
 ## Supported Package Managers
 
-| Package manager | Installing packages | Removing packages | Updating packages | Listing packages |
-| --------------- | ------------------- | ----------------- | ----------------- | ---------------- |
-| apt             | ❌                  | ❌                | ❌                | ❌               |
-| pacman          | ❌                  | ❌                | ❌                | ❌               |
-| nix             | ❌                  | ❌                | ❌                | ❌               |
-| scoop           | ❌                  | ❌                | ❌                | ❌               |
-| winget          | ❌                  | ❌                | ❌                | ❌               |
+| Package manager | Installing packages | Removing packages | Updating packages |
+| --------------- | ------------------- | ----------------- | ----------------- |
+| apt             | ✅                  | ✅                | ✅                |
+| pacman          | ✅                  | ✅                | ✅                |
+| nix             | ❌                  | ❌                | ❌                |
 
 ## Documentation
 
@@ -50,7 +48,7 @@ $ mehr init
 > Installing packages via `mehr install <package>` does not modify the `mehr`
 > configuration file, thus these packages are referred to as temporary
 > packages. `mehr` does not manage dependencies of packages and performs
-> install, update and remove recursively, there always installing, updating and
+> install, upgrade and remove recursively, there always installing, updating and
 > removing packages recursively.
 
 Installing a singular package:
@@ -107,27 +105,27 @@ kitty@0.21.2
 firefox@119.0
 ```
 
-#### Updating packages
+#### Upgrade packages
 
-> Updating does not modify the `mehr` configuration, the latest version is used
-> for updates.
+> Upgrading does not modify the `mehr` configuration, the latest version is
+> used for upgrades.
 
-To update all packages on your system, run:
+To upgrade all packages on your system, run:
 
 ```shell
-$ mehr update
+$ mehr upgrade
 ```
 
 Updating a singular package:
 
 ```shell
-$ mehr update <package>
+$ mehr upgrade <package>
 ```
 
 Updating multiple packages:
 
 ```shell
-$ mehr update <package> <package>
+$ mehr upgrade <package> <package>
 ```
 
 #### Removing packages
@@ -165,7 +163,7 @@ $ mehr save
 #### Restoring system state
 
 `mehr sync` either forwards or resets the systems state to the state of the
-configuration file, thus syncing both.
+configuration file, thus syncing both and removing the current lock file.
 
 Packages not installed but found in the `mehr` configuration will be installed
 upon running `mehr sync`. If packages are installed on the system but aren't
@@ -175,8 +173,8 @@ can be synced to the configuration via `mehr sync`:
 ```shell
 $ mehr sync
 info: detected 2 packages on your system that are not in ~/.config/mehr/mehr.toml:
-(1) neovim@0.10.0-dev
-(2) falkon@3.2.0
+neovim@0.10.0-dev
+falkon@3.2.0
 Are you sure your want to remove (2) temporary packages from your system? [Y/n]
 ```
 
@@ -185,8 +183,8 @@ Skip the confirmation prompt:
 ```shell
 $ mehr sync --force
 info: detected 2 packages on your system that are not in ~/.config/mehr/mehr.toml:
-(1) neovim@0.10.0-dev
-(2) falkon@3.2.0
+neovim@0.10.0-dev
+falkon@3.2.0
 info: removing 2 packages
 ```
 
