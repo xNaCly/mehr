@@ -32,16 +32,22 @@ var Managers = []*PackageManager{
 		},
 	},
 	{
-		Name: "npm",
+		Name:    "npm",
 		install: &types.SubCommand{Name: "install", Options: []string{"-g"}},
 		update:  &types.SubCommand{Name: "update", Options: []string{"-g"}},
 		remove:  &types.SubCommand{Name: "uninstall", Options: []string{"-g"}},
+		formatPkgWithVersion: func(name, version string) string {
+			return name + "@" + version
+		},
 	},
 	{
-		Name: "pnpm",
+		Name:    "pnpm",
 		install: &types.SubCommand{Name: "add", Options: []string{"-g"}},
 		update:  &types.SubCommand{Name: "update", Options: []string{"-g"}},
 		remove:  &types.SubCommand{Name: "remove", Options: []string{"-g"}},
+		formatPkgWithVersion: func(name, version string) string {
+			return name + "@" + version
+		},
 	},
 }
 
