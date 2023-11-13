@@ -33,18 +33,20 @@ var Managers = []*PackageManager{
 	},
 	{
 		Name:    "npm",
-		install: &types.SubCommand{Name: "install", Options: []string{"-g"}},
-		update:  &types.SubCommand{Name: "update", Options: []string{"-g"}},
-		remove:  &types.SubCommand{Name: "uninstall", Options: []string{"-g"}},
+		options: []string{"-g"}, // tells npm to install globally
+		install: &types.SubCommand{Name: "install"},
+		update:  &types.SubCommand{Name: "update"},
+		remove:  &types.SubCommand{Name: "uninstall"},
 		formatPkgWithVersion: func(name, version string) string {
 			return name + "@" + version
 		},
 	},
 	{
 		Name:    "pnpm",
-		install: &types.SubCommand{Name: "add", Options: []string{"-g"}},
-		update:  &types.SubCommand{Name: "update", Options: []string{"-g"}},
-		remove:  &types.SubCommand{Name: "remove", Options: []string{"-g"}},
+		options: []string{"-g"}, // tells pnpm to install globally
+		install: &types.SubCommand{Name: "add"},
+		update:  &types.SubCommand{Name: "update"},
+		remove:  &types.SubCommand{Name: "remove"},
 		formatPkgWithVersion: func(name, version string) string {
 			return name + "@" + version
 		},
