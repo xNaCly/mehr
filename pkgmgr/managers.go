@@ -31,6 +31,26 @@ var Managers = []*PackageManager{
 			return name + "=" + version
 		},
 	},
+	{
+		Name:    "npm",
+		options: []string{"-g"}, // tells npm to install globally
+		install: &types.SubCommand{Name: "install"},
+		update:  &types.SubCommand{Name: "update"},
+		remove:  &types.SubCommand{Name: "uninstall"},
+		formatPkgWithVersion: func(name, version string) string {
+			return name + "@" + version
+		},
+	},
+	{
+		Name:    "pnpm",
+		options: []string{"-g"}, // tells pnpm to install globally
+		install: &types.SubCommand{Name: "add"},
+		update:  &types.SubCommand{Name: "update"},
+		remove:  &types.SubCommand{Name: "remove"},
+		formatPkgWithVersion: func(name, version string) string {
+			return name + "@" + version
+		},
+	},
 }
 
 // returns the package manager for name if found, otherwise errors
