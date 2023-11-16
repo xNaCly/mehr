@@ -10,17 +10,15 @@
 package-manager = "auto"
 
 # configure all packages you require to be permanently installed on your system
-[packages]
-  [packages.kitty]
+[package]
+  [package.kitty]
     # lock a package on a specific version, mehr will not install anything
     # higher or lower than this, throws an error if the repos of the used
     # package manager do not include the specific version
     version = "0.21.2"
-  [packages.neovim]
+  [package.neovim]
     # packages without version or url are also installed
 
-# WARN: this is not yet implemented
-#
 # commands are used to run executables found in $PATH of the system
 [command]
  # name of the command, executable with 'mehr r <command>', here 'mehr r run'

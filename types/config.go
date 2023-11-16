@@ -8,6 +8,7 @@ type PackageConfig struct {
 	Link    string `toml:"link"`    // location of the file to link the configuration file to
 }
 
+// configure the system
 type SystemConfig struct {
 	// path to store package configuration at, falls back to `$XDG_CONFIG_HOME` for
 	// linux, %AppData% for windows and $HOME/Library/Application Support/ for
@@ -23,8 +24,15 @@ type Package struct {
 	URL     string `toml:"url"`     // url to download package from
 }
 
+type Command struct {
+	Cmd string            `toml:"cmd"` // command to execute
+	Cwd string            `toml:"cwd"` // working directory of the command
+	Env map[string]string `toml:"env"` // env variables by key = value
+}
+
 type Configuration struct {
 	PackageManager string              `toml:"package-manager"` // specify what package manager to use, path or empty for auto lookup
-	Packages       map[string]*Package `toml:"packages"`        // packages to install
-	SystemConfig   *SystemConfig       `toml:"config"`          // configure the system and the installed packages
+	Commands       map[string]Command  `toml:"command"`
+	Packages       map[string]*Package `toml:"package"` // packages to install
+	SystemConfig   *SystemConfig       `toml:"config"`  // configure the system and the installed packages
 }
