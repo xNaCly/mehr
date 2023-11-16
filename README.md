@@ -188,6 +188,51 @@ falkon@3.2.0
 info: removing 2 packages
 ```
 
+#### Running commands
+
+`mehr` accepts commands in its configuration file, these can be ran with `mehr run <cmd>`:
+
+```shell
+$ mehr run l
+info: Got command: "ls -la" with cwd: "" and env: map[]
+total 20
+drwxr-xr-x 1 teo teo  118 Nov 16 12:15 .
+drwxr-xr-x 1 teo teo 1006 Nov 13 13:04 ..
+drwxr-xr-x 1 teo teo  126 Nov 16 12:11 cmd
+drwxr-xr-x 1 teo teo   36 Nov 16 12:15 config
+drwxr-xr-x 1 teo teo  204 Nov 16 12:13 .git
+-rw-r--r-- 1 teo teo  242 Nov  6 09:04 go.mod
+-rw-r--r-- 1 teo teo 1067 Nov  6 09:04 go.sum
+drwxr-xr-x 1 teo teo   14 Nov  8 08:49 lock
+drwxr-xr-x 1 teo teo   12 Nov  8 08:49 log
+-rw-r--r-- 1 teo teo  109 Nov 16 10:36 main.go
+drwxr-xr-x 1 teo teo   40 Nov 16 10:29 pkgmgr
+-rw-r--r-- 1 teo teo 5573 Nov 16 12:15 README.md
+drwxr-xr-x 1 teo teo   66 Nov 16 12:02 types
+info: Ran command "l" successfully
+```
+
+View all available commands with `mehr run help`:
+
+```shell
+l:
+        Command: "ls -la"
+
+run:
+        Command: "go run ."
+
+generate:
+        Command: "go generate"
+
+build:linux/amd64:
+        Command: "go build ."
+        Env:
+                GOOS: "linux"
+                GOARCH: "amd64"
+```
+
+See Configuration/Commands for configuring commands.
+
 ### Configuration
 
 `mehr` expects the `mehr.toml` file to be present at one of the following
@@ -198,3 +243,9 @@ locations:
 | Linux like       | `$XDG_CONFIG_HOME/mehr/mehr.toml` | `$HOME/mehr.toml`                                  |
 | MacOS            | `$XDG_CONFIG_HOME/mehr/mehr.toml` | `$HOME/Library/Application Support/mehr/mehr.toml` |
 | Windows          | `%AppData%/mehr/mehr.toml`        |                                                    |
+
+#### Packages
+
+#### System configuration
+
+#### Commands

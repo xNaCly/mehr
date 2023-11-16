@@ -21,18 +21,23 @@ package-manager = "auto"
 
 # commands are used to run executables found in $PATH of the system
 [command]
+ [command.l]
+  cmd = "ls -la"
  # name of the command, executable with 'mehr r <command>', here 'mehr r run'
- [command.run]
+ [command.grun]
   cmd = "go run ."
- [command.generate]
+ [command.gen]
+  # removes all environment variables mehr was started with, only keeps
+  # variables defined in command.<cmd>.env
+  purge-env = true
   cmd = "go generate"
-  # changes the working directory of this command to the rhs below
+  # changes the working directory of this command to the rhs below, leave empty for PWD
   cwd = ".."
- [command."build:linux/amd64"]
+ [command."gobuild:linux/amd64"]
   cmd = "go build ."
   # set environment variables
   [command."build:linux/amd64".env]   
-   GOOS = "linux"      
+   GOOS = "linux"
    GOARCH = "amd64"
 
 

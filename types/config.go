@@ -25,9 +25,10 @@ type Package struct {
 }
 
 type Command struct {
-	Cmd string            `toml:"cmd"` // command to execute
-	Cwd string            `toml:"cwd"` // working directory of the command
-	Env map[string]string `toml:"env"` // env variables by key = value
+	Cmd        string            `toml:"cmd"`       // command to execute
+	Cwd        string            `toml:"cwd"`       // working directory of the command
+	Env        map[string]string `toml:"env"`       // env variables by key = value
+	PurgeOsEnv bool              `toml:"purge-env"` // removes all env variables mehr was started with, only keeps Command.Env
 }
 
 type Configuration struct {
