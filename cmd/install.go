@@ -72,7 +72,7 @@ See 'mehr sync help' for more information.`,
 		if len(args) == 0 {
 			err, amount := manager.Install(conf.Packages)
 			if err != nil {
-				l.Error("failed to install packages", err)
+				l.Errorf("failed to install packages: %s", err)
 			} else if amount > 0 {
 				l.Infof("Installed %d packages", len(conf.Packages))
 			} else {
@@ -85,7 +85,7 @@ See 'mehr sync help' for more information.`,
 			}
 			err, amount := manager.Install(pkgs)
 			if err != nil {
-				l.Error("failed to install packages", err)
+				l.Errorf("failed to install packages: %s", err)
 			} else if amount > 0 {
 				l.Infof("Installed %d packages", len(conf.Packages))
 			}

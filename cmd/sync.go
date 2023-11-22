@@ -87,7 +87,7 @@ can be synced to the configuration via mehr sync.
 		l.Info("Installing permanent packages")
 		err, amount := manager.Install(conf.Packages)
 		if err != nil {
-			l.Errorf("Failed to install packages: %w", err)
+			l.Errorf("Failed to install packages: %s", err)
 		} else if amount > 0 {
 			l.Infof("Installed %d packages", len(conf.Packages))
 		} else {
