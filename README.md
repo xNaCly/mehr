@@ -24,6 +24,9 @@ The goal is to provide a singular interface for managing packages. This interfac
 | --------------- | ------------------- | ----------------- | ----------------- |
 | apt             | ✅                  | ✅                | ✅                |
 | pacman          | ✅                  | ✅                | ✅                |
+| cargo             | ✅                  | ✅                | ✅                |
+| npm             | ✅                  | ✅                | ✅                |
+| pnpm             | ✅                  | ✅                | ✅                |
 | nix             | ❌                  | ❌                | ❌                |
 
 ## Documentation
