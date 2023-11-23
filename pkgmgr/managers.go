@@ -57,11 +57,10 @@ var Managers = []*PackageManager{
 func GetByName(name string) (*PackageManager, error) {
 	for _, mgr := range Managers {
 		if mgr.Name == name {
-			path, ok := mgr.Exists()
+			ok := mgr.Exists()
 			if !ok {
 				return nil, fmt.Errorf("Package manager %q not found on operating system", mgr.Name)
 			}
-			mgr.Name = path
 			return mgr, nil
 		}
 	}
@@ -71,8 +70,7 @@ func GetByName(name string) (*PackageManager, error) {
 // returns the currently available package manager on the system
 func Get() (*PackageManager, bool) {
 	for _, mgr := range Managers {
-		if path, ok := mgr.Exists(); ok {
-			mgr.Name = path
+		if ok := mgr.Exists(); ok {
 			return mgr, true
 		}
 	}

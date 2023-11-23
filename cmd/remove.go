@@ -44,40 +44,62 @@ Errors on attempting to remove packages not found in the lock file
 			return
 		}
 
-		var manager *pkgmgr.PackageManager
-		if conf.PackageManager == "auto" || conf.PackageManager == "" {
-			mgr, ok := pkgmgr.Get()
-
-			if !ok {
-				l.Error("Failed to find a package manager")
-				return
-			}
-
-			manager = mgr
-		} else {
-			var err error
-			mgr, err := pkgmgr.GetByName(conf.PackageManager)
-			if err != nil {
-				l.Error(err)
-				return
-			}
-			manager = mgr
-		}
-
 		if len(args) == 0 {
-			pkgs := make([]string, 0)
-			for k, _ := range lock.Temporary(conf, lock.Get()) {
-				pkgs = append(pkgs, k)
-			}
-			err, amount := manager.Remove(pkgs...)
-			if err != nil {
-				l.Error("failed to upgrade packages", err)
-			} else if amount > 0 {
-				l.Infof("Upgraded %d packages", len(conf.Packages))
-			} else {
-				l.Infof("Did nothing, exiting")
+			// removes all temp packages
+			for mgr, packages := range lock.Temporary(conf, lock.Get()) {
+				if len(packages) == 0 {
+					continue
+				}
+				pkgs := make([]string, 0, len(packages))
+				for name := range packages {
+					pkgs = append(pkgs, name)
+				}
+
+				var manager *pkgmgr.PackageManager
+				if mgr == "$" {
+					var ok bool
+					manager, ok = pkgmgr.Get()
+					if !ok {
+						l.Error("Failed to find a package manager")
+						return
+					}
+				} else {
+					manager, err = pkgmgr.GetByName(mgr)
+					if err != nil {
+						l.Error(err)
+						return
+					}
+				}
+				err, amount := manager.Remove(pkgs...)
+				if err != nil {
+					l.Error("failed to upgrade packages", err)
+				} else if amount > 0 {
+					l.Infof("Upgraded %d packages", len(conf.Packages))
+				} else {
+					l.Infof("Did nothing, exiting")
+				}
 			}
 		} else {
+
+			var manager *pkgmgr.PackageManager
+			if conf.PackageManager == "auto" || conf.PackageManager == "" {
+				mgr, ok := pkgmgr.Get()
+
+				if !ok {
+					l.Error("Failed to find a package manager")
+					return
+				}
+
+				manager = mgr
+			} else {
+				var err error
+				mgr, err := pkgmgr.GetByName(conf.PackageManager)
+				if err != nil {
+					l.Error(err)
+					return
+				}
+				manager = mgr
+			}
 			err, amount := manager.Remove(args...)
 			if err != nil {
 				l.Error("failed to upgrade packages", err)

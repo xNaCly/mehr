@@ -32,8 +32,8 @@ type Command struct {
 }
 
 type Configuration struct {
-	PackageManager string              `toml:"package-manager"` // specify what package manager to use, path or empty for auto lookup
-	Commands       map[string]Command  `toml:"command"`
-	Packages       map[string]*Package `toml:"package"` // packages to install
-	SystemConfig   *SystemConfig       `toml:"config"`  // configure the system and the installed packages
+	PackageManager string                         `toml:"package-manager"` // specify what package manager to use, path or empty for auto lookup
+	Commands       map[string]Command             `toml:"command"`
+	Packages       map[string]map[string]*Package `toml:"package"` // packages to install
+	SystemConfig   *SystemConfig                  `toml:"config"`  // configure the system and the installed packages
 }

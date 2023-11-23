@@ -27,13 +27,13 @@ Full configuration is available at https://github.com/xnacly/mehr`,
 			l.Warn(msg, "got --force, not exiting")
 		}
 		configPath := config.LookUp()
-		conf, err := config.Get(configPath)
+		_, err := config.Get(configPath)
 
 		if err != nil {
 			l.Warn(err)
 		}
 
-		l.Infof("Got %q for Configuration.PackageManager", conf.PackageManager)
+		cmd.Help()
 	},
 }
 

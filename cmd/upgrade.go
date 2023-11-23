@@ -73,7 +73,30 @@ Errors on attempting to upgrade packages not found in the lock file.
 			if err != nil {
 				l.Errorf("Failed to update the lock file update timestamp")
 			}
-			err = manager.Update()
+
+			packages := lock.Get()
+			// installs packages from configuration
+			for mgr, pkgs := range packages.Packages {
+				if len(pkgs) == 0 {
+					continue
+				}
+				var manager *pkgmgr.PackageManager
+				if mgr == "$" {
+					var ok bool
+					manager, ok = pkgmgr.Get()
+					if !ok {
+						l.Error("Failed to find a package manager")
+						return
+					}
+				} else {
+					manager, err = pkgmgr.GetByName(mgr)
+					if err != nil {
+						l.Error(err)
+						return
+					}
+				}
+				err = manager.Update()
+			}
 			if err != nil {
 				l.Errorf("Failed to upgrade package manager repositories: %w", err)
 			}
@@ -82,13 +105,36 @@ Errors on attempting to upgrade packages not found in the lock file.
 		}
 
 		if len(args) == 0 {
-			err, amount := manager.Upgrade(lock.Get().Packages)
-			if err != nil {
-				l.Error("failed to upgrade packages", err)
-			} else if amount > 0 {
-				l.Infof("Upgraded %d packages", len(conf.Packages))
-			} else {
-				l.Infof("Did nothing, exiting")
+			packages := lock.Get()
+			// installs packages from configuration
+			for mgr, pkgs := range packages.Packages {
+				if len(pkgs) == 0 {
+					continue
+				}
+				var manager *pkgmgr.PackageManager
+				if mgr == "$" {
+					var ok bool
+					manager, ok = pkgmgr.Get()
+					if !ok {
+						l.Error("Failed to find a package manager")
+						return
+					}
+				} else {
+					manager, err = pkgmgr.GetByName(mgr)
+					if err != nil {
+						l.Error(err)
+						return
+					}
+				}
+
+				err, amount := manager.Upgrade(packages.Packages[mgr])
+				if err != nil {
+					l.Error("failed to upgrade packages", err)
+				} else if amount > 0 {
+					l.Infof("Upgraded %d packages", len(conf.Packages))
+				} else {
+					l.Infof("Did nothing, exiting")
+				}
 			}
 		} else {
 			pkgs := map[string]*types.Package{}

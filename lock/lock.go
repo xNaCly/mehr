@@ -9,12 +9,13 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
-
 	"github.com/xnacly/mehr/types"
 )
 
 var path = LookUp()
-var lock *types.LockFile = &types.LockFile{Packages: map[string]*types.Package{}}
+var lock *types.LockFile = &types.LockFile{
+	Packages: map[string]map[string]*types.Package{},
+}
 
 func init() {
 	toml.DecodeFile(path, lock)
@@ -27,22 +28,30 @@ func LookUp() string {
 }
 
 // return all packages permanently installed on the system
-func Permanent(config *types.Configuration, lock *types.LockFile) map[string]*types.Package {
-	perm := map[string]*types.Package{}
-	for k, v := range config.Packages {
-		if _, ok := lock.Packages[k]; ok {
-			perm[k] = v
+func Permanent(config *types.Configuration, lock *types.LockFile) map[string]map[string]*types.Package {
+	perm := map[string]map[string]*types.Package{}
+	// iterate over package managers
+	for mgr, v := range lock.Packages {
+		perm[mgr] = make(map[string]*types.Package)
+		for pkgkey, pkg := range v {
+			if _, ok := config.Packages[mgr][pkgkey]; ok {
+				perm[mgr][pkgkey] = pkg
+			}
 		}
 	}
 	return perm
 }
 
 // return all temporary installed packages on the system
-func Temporary(config *types.Configuration, lock *types.LockFile) map[string]*types.Package {
-	temp := map[string]*types.Package{}
-	for k, v := range lock.Packages {
-		if _, ok := config.Packages[k]; !ok {
-			temp[k] = v
+func Temporary(config *types.Configuration, lock *types.LockFile) map[string]map[string]*types.Package {
+	temp := map[string]map[string]*types.Package{}
+	// iterate over package managers
+	for mgr, v := range lock.Packages {
+		temp[mgr] = make(map[string]*types.Package)
+		for pkgkey, pkg := range v {
+			if _, ok := config.Packages[mgr][pkgkey]; !ok {
+				temp[mgr][pkgkey] = pkg
+			}
 		}
 	}
 	return temp
@@ -78,12 +87,15 @@ func UpdateTimeStamp() error {
 }
 
 // adds entry to the lock file, writes it to disk and updates the cached lock file
-func AddPackage(name string, entry *types.Package) error {
-	lock.Packages[name] = entry
+func AddPackage(name, packagemanager string, entry *types.Package) error {
+	if _, ok := lock.Packages[packagemanager]; !ok {
+		lock.Packages[packagemanager] = make(map[string]*types.Package)
+	}
+	lock.Packages[packagemanager][name] = entry
 	return writeToDisk()
 }
 
-func RemovePackage(name string) error {
-	delete(lock.Packages, name)
+func RemovePackage(name, packagemanager string) error {
+	delete(lock.Packages[packagemanager], name)
 	return writeToDisk()
 }

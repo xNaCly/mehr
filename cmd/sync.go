@@ -35,63 +35,94 @@ can be synced to the configuration via mehr sync.
 			return
 		}
 
-		var manager *pkgmgr.PackageManager
-		if conf.PackageManager == "auto" || conf.PackageManager == "" {
-			mgr, ok := pkgmgr.Get()
-
-			if !ok {
-				l.Error("Failed to find a package manager")
-				return
-			}
-
-			manager = mgr
-		} else {
-			var err error
-			mgr, err := pkgmgr.GetByName(conf.PackageManager)
-			if err != nil {
-				l.Error(err)
-				return
-			}
-			manager = mgr
-		}
-
 		tempPkg := lock.Temporary(conf, lock.Get())
-		printPackages(tempPkg)
 		if len(tempPkg) > 0 {
 			l.Info("Removing temporally installed packages")
 			if force, err := cmd.Flags().GetBool("force"); err != nil || !force {
-				l.Errorf("Would permanently remove %d temporary packages, rerun with --force to continue", len(tempPkg))
+				printPackages(tempPkg)
+				l.Errorf("Would permanently remove the above temporary packages, rerun with --force to continue")
 				return
 			} else {
 				l.Warn("Got --force, mehr will remove packages and or configuration to match the configured system state")
 			}
 
-			packages := make([]string, 0)
+			for mgr, pkgs := range tempPkg {
+				if len(pkgs) == 0 {
+					l.Infof("Skipping removing packages for %q", mgr)
+					continue
+				}
 
-			for k := range tempPkg {
-				packages = append(packages, k)
-			}
+				var manager *pkgmgr.PackageManager
+				if mgr == "$" {
+					var ok bool
+					manager, ok = pkgmgr.Get()
+					if !ok {
+						l.Error("Failed to find a package manager")
+						return
+					}
+				} else {
+					manager, err = pkgmgr.GetByName(mgr)
+					if err != nil {
+						l.Error(err)
+						return
+					}
+				}
 
-			err, amount := manager.Remove(packages...)
-			if err != nil {
-				l.Errorf("Failed to remove temporary packages: %w", err)
-			} else if amount > 0 {
-				l.Infof("Installed %d packages", len(conf.Packages))
-			} else {
-				l.Infof("Did nothing, exiting")
+				packages := make([]string, 0, len(pkgs))
+
+				for k := range pkgs {
+					packages = append(packages, k)
+				}
+
+				err, amount := manager.Remove(packages...)
+				if err != nil {
+					l.Errorf("Failed to remove temporary packages: %w", err)
+				} else if amount > 0 {
+					l.Infof("Installed %d packages", len(conf.Packages))
+				} else {
+					l.Infof("Did nothing, exiting")
+				}
 			}
-		} else {
-			l.Infof("No temporary packages found, skipped removing them")
 		}
 
-		l.Info("Installing permanent packages")
-		err, amount := manager.Install(conf.Packages)
-		if err != nil {
-			l.Errorf("Failed to install packages: %s", err)
-		} else if amount > 0 {
-			l.Infof("Installed %d packages", len(conf.Packages))
-		} else {
-			l.Infof("Did nothing, exiting")
+		if len(conf.Packages) > 0 {
+			l.Info("Installing permanent packages")
+			for mgr, pkgs := range conf.Packages {
+				if len(pkgs) == 0 {
+					l.Infof("Skipping installing packages for %q", mgr)
+					continue
+				}
+				var manager *pkgmgr.PackageManager
+				if mgr == "$" {
+					var ok bool
+					manager, ok = pkgmgr.Get()
+					if !ok {
+						l.Error("Failed to find a package manager")
+						return
+					}
+				} else {
+					manager, err = pkgmgr.GetByName(mgr)
+					if err != nil {
+						l.Error(err)
+						return
+					}
+				}
+
+				packages := make([]string, 0)
+
+				for k := range tempPkg {
+					packages = append(packages, k)
+				}
+
+				err, amount := manager.Install(pkgs)
+				if err != nil {
+					l.Errorf("Failed to install packages: %s", err)
+				} else if amount > 0 {
+					l.Infof("Installed %d packages", len(conf.Packages))
+				} else {
+					l.Infof("Did nothing, exiting")
+				}
+			}
 		}
 
 		// TODO: execute configuration management here

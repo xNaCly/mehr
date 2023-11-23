@@ -10,14 +10,24 @@
 package-manager = "auto"
 
 # configure all packages you require to be permanently installed on your system
-[package]
-  [package.kitty]
+# use $ to install packages with the default package manager
+[package."$"]
+  [package."$".kitty]
     # lock a package on a specific version, mehr will not install anything
     # higher or lower than this, throws an error if the repos of the used
     # package manager do not include the specific version
-    version = "0.21.2"
-  [package.neovim]
+    # version = "0.21.2"
+  [package."$".neovim]
     # packages without version or url are also installed
+
+# install package with a specific package manager
+[package.npm]
+  [package.npm.tailwindcss]
+
+# WARN:
+# no cargo support yet
+# [package.cargo]
+#   [package.cargo.ripgrep]
 
 # commands are used to run executables found in $PATH of the system
 [command]

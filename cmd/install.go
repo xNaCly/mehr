@@ -49,36 +49,59 @@ See 'mehr sync help' for more information.`,
 			return
 		}
 
-		var manager *pkgmgr.PackageManager
-		if conf.PackageManager == "auto" || conf.PackageManager == "" {
-			mgr, ok := pkgmgr.Get()
-
-			if !ok {
-				l.Error("Failed to find a package manager")
-				return
-			}
-
-			manager = mgr
-		} else {
-			var err error
-			mgr, err := pkgmgr.GetByName(conf.PackageManager)
-			if err != nil {
-				l.Error(err)
-				return
-			}
-			manager = mgr
-		}
-
 		if len(args) == 0 {
-			err, amount := manager.Install(conf.Packages)
-			if err != nil {
-				l.Errorf("failed to install packages: %s", err)
-			} else if amount > 0 {
-				l.Infof("Installed %d packages", len(conf.Packages))
-			} else {
-				l.Infof("Did nothing, exiting")
+			// installs packages from configuration
+			for mgr, pkgs := range conf.Packages {
+				if len(pkgs) == 0 {
+					continue
+				}
+				var manager *pkgmgr.PackageManager
+				if mgr == "$" {
+					var ok bool
+					manager, ok = pkgmgr.Get()
+					if !ok {
+						l.Error("Failed to find a package manager")
+						return
+					}
+				} else {
+					manager, err = pkgmgr.GetByName(mgr)
+					if err != nil {
+						l.Error(err)
+						return
+					}
+				}
+
+				err, amount := manager.Install(pkgs)
+				if err != nil {
+					l.Errorf("failed to install packages: %s", err)
+				} else if amount > 0 {
+					l.Infof("Installed %d packages", len(conf.Packages))
+				} else {
+					l.Infof("Did nothing, exiting")
+				}
 			}
 		} else {
+			var manager *pkgmgr.PackageManager
+			if conf.PackageManager == "auto" || conf.PackageManager == "" {
+				mgr, ok := pkgmgr.Get()
+
+				if !ok {
+					l.Error("Failed to find a package manager")
+					return
+				}
+
+				manager = mgr
+			} else {
+				var err error
+				mgr, err := pkgmgr.GetByName(conf.PackageManager)
+				if err != nil {
+					l.Error(err)
+					return
+				}
+				manager = mgr
+			}
+
+			// installs packages with default package manager
 			pkgs := map[string]*types.Package{}
 			for _, pkg := range args {
 				pkgs[pkg] = &types.Package{}

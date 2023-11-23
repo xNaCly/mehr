@@ -59,7 +59,7 @@ func (p *PackageManager) Install(packages map[string]*types.Package) (error, int
 		return err, 0
 	}
 	for k, v := range packages {
-		err := lock.AddPackage(k, v)
+		err := lock.AddPackage(k, p.Name, v)
 		if err != nil {
 			return err, 0
 		}
@@ -88,7 +88,7 @@ func (p *PackageManager) Upgrade(packages map[string]*types.Package) (error, int
 		return err, 0
 	}
 	for k, v := range packages {
-		err := lock.AddPackage(k, v)
+		err := lock.AddPackage(k, p.Name, v)
 		if err != nil {
 			return err, 0
 		}
@@ -105,7 +105,7 @@ func (p *PackageManager) Remove(packages ...string) (error, int) {
 		return err, 0
 	}
 	for _, pkg := range packages {
-		err := lock.RemovePackage(pkg)
+		err := lock.RemovePackage(pkg, p.Name)
 		if err != nil {
 			return err, 0
 		}
@@ -117,7 +117,7 @@ func (p *PackageManager) Update() error {
 	return p.createCmd(p.update)
 }
 
-func (p *PackageManager) Exists() (string, bool) {
-	path, err := exec.LookPath(p.Name)
-	return path, err == nil
+func (p *PackageManager) Exists() bool {
+	_, err := exec.LookPath(p.Name)
+	return err == nil
 }

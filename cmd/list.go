@@ -42,22 +42,26 @@ var listCmd = &cobra.Command{
 			printPackages(lock.Permanent(conf, lock.Get()))
 			return
 		} else {
-			temp := lock.Temporary(conf, lock.Get())
-			l.Infof("Found %d packages installed on your system, %d of them temporary", len(all), len(temp))
 			printPackages(all)
 		}
 	},
 }
 
-func printPackages(packages map[string]*types.Package) {
+func printPackages(packages map[string]map[string]*types.Package) {
 	i := 1
-	for k, v := range packages {
-		fmt.Print("(", i, ") ")
-		if v.Version != "" {
-			fmt.Println(k + "@" + v.Version)
-		} else {
-			fmt.Println(k)
+	for manager, pkgs := range packages {
+		if len(pkgs) == 0 {
+			continue
 		}
-		i++
+		fmt.Println(manager)
+		for name, pkg := range pkgs {
+			fmt.Print("(", i, ") ")
+			if pkg.Version != "" {
+				fmt.Println(name + "@" + pkg.Version)
+			} else {
+				fmt.Println(name)
+			}
+			i++
+		}
 	}
 }
