@@ -51,6 +51,16 @@ var Managers = []*PackageManager{
 			return name + "@" + version
 		},
 	},
+	{
+		Name:    "cargo",
+		noSudo:  true,
+		install: &types.SubCommand{Name: "install"},
+		update:  &types.SubCommand{Name: "install"},
+		remove:  &types.SubCommand{Name: "uninstall"},
+		formatPkgWithVersion: func(name, version string) string {
+			return name + "@" + version
+		},
+	},
 }
 
 // returns the package manager for name if found, otherwise errors

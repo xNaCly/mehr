@@ -38,6 +38,7 @@ can be synced to the configuration via mehr sync.
 		tempPkg := lock.Temporary(conf, lock.Get())
 		if len(tempPkg) > 0 {
 			l.Info("Removing temporally installed packages")
+			// only if there are temp packages
 			if force, err := cmd.Flags().GetBool("force"); err != nil || !force {
 				printPackages(tempPkg)
 				l.Errorf("Would permanently remove the above temporary packages, rerun with --force to continue")

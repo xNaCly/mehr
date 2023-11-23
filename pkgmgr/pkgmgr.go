@@ -2,7 +2,6 @@
 package pkgmgr
 
 import (
-	"context"
 	"os"
 	"os/exec"
 	"strings"
@@ -20,18 +19,27 @@ type PackageManager struct {
 	upgrade              *types.SubCommand                        // command to be executed for updating packages
 	remove               *types.SubCommand                        // command to be executed for removing packages
 	update               *types.SubCommand                        // command to be executed for updating source / fetching new package data
+	noSudo               bool                                     // some package managers do not require sudo, true if so
 	options              []string                                 // options for all sub commands
 	formatPkgWithVersion func(name string, version string) string // used to format every package before attempting to install it
 }
 
 func (p *PackageManager) createCmd(c *types.SubCommand, packages ...string) error {
+	if c.Name == "" {
+		return nil
+	}
 	args := []string{p.Name, c.Name}
 	args = append(args, p.options...)
 	args = append(args, c.Options...)
 	args = append(args, packages...)
 
 	log.Infof("running %q", strings.Join(args, " "))
-	cmd := exec.CommandContext(context.Background(), "sudo", args...)
+	var cmd *exec.Cmd
+	if p.noSudo {
+		cmd = exec.Command(args[0], args[1:]...)
+	} else {
+		cmd = exec.Command("sudo", args...)
+	}
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
