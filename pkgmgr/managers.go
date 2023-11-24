@@ -55,7 +55,6 @@ var Managers = []*PackageManager{
 		Name:    "cargo",
 		noSudo:  true,
 		install: &types.SubCommand{Name: "install"},
-		update:  &types.SubCommand{Name: "install"},
 		remove:  &types.SubCommand{Name: "uninstall"},
 		formatPkgWithVersion: func(name, version string) string {
 			return name + "@" + version
