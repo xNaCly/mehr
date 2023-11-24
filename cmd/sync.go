@@ -104,8 +104,8 @@ can be synced to the configuration via mehr sync.
 				} else {
 					manager, err = pkgmgr.GetByName(mgr)
 					if err != nil {
-						l.Error(err)
-						return
+						l.Infof("Missing package manager %q from system, skipping...", mgr)
+						continue
 					}
 				}
 

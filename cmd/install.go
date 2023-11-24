@@ -66,8 +66,8 @@ See 'mehr sync help' for more information.`,
 				} else {
 					manager, err = pkgmgr.GetByName(mgr)
 					if err != nil {
-						l.Error(err)
-						return
+						l.Infof("Missing package manager %q from system, skipping...", mgr)
+						continue
 					}
 				}
 
