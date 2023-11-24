@@ -105,9 +105,9 @@ Errors on attempting to upgrade packages not found in the lock file.
 		}
 
 		if len(args) == 0 {
-			packages := lock.Get()
+			lockFile := lock.Get()
 			// installs packages from configuration
-			for mgr, pkgs := range packages.Packages {
+			for mgr, pkgs := range lockFile.Packages {
 				if len(pkgs) == 0 {
 					continue
 				}
@@ -122,12 +122,12 @@ Errors on attempting to upgrade packages not found in the lock file.
 				} else {
 					manager, err = pkgmgr.GetByName(mgr)
 					if err != nil {
-						l.Error(err)
-						return
+						l.Infof("Missing package manager %q from system, skipping...", mgr)
+						continue
 					}
 				}
 
-				err, amount := manager.Upgrade(packages.Packages[mgr])
+				err, amount := manager.Upgrade(lockFile.Packages[mgr])
 				if err != nil {
 					l.Error("failed to upgrade packages", err)
 				} else if amount > 0 {

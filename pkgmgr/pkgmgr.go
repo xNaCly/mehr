@@ -78,10 +78,6 @@ func (p *PackageManager) Install(packages map[string]*types.Package) (error, int
 func (p *PackageManager) Upgrade(packages map[string]*types.Package) (error, int) {
 	pkgs := make([]string, 0)
 	for k, v := range packages {
-		if _, ok := lock.Get().Packages[k]; !ok {
-			log.Warnf("Package %s@%s not installed, skipping", k, v.Version)
-			continue
-		}
 		if v.Version != "" {
 			pkgs = append(pkgs, p.formatPkgWithVersion(k, v.Version))
 		} else {
