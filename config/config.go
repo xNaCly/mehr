@@ -45,12 +45,7 @@ func Get(path string) (*types.Configuration, error) {
 
 	c := &types.Configuration{}
 
-	out, err := os.ReadFile(path)
-	if err != nil {
-		return c, fmt.Errorf("Failed to read configuration file: %w", err)
-	}
-
-	_, err = toml.Decode(string(out), c)
+	_, err := toml.DecodeFile(path, c)
 	if err != nil {
 		return c, fmt.Errorf("Failed to decode configuration file: %w", err)
 	}
