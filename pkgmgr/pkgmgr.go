@@ -25,7 +25,7 @@ type PackageManager struct {
 }
 
 func (p *PackageManager) createCmd(c *types.SubCommand, packages ...string) error {
-	if c.Name == "" {
+	if c == nil || c.Name == "" {
 		return nil
 	}
 	args := []string{p.Name, c.Name}
