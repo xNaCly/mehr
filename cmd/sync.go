@@ -36,7 +36,7 @@ can be synced to the configuration via mehr sync.
 		}
 
 		tempPkg := lock.Temporary(conf, lock.Get())
-		if len(tempPkg) > 0 {
+		if lock.Len(tempPkg) > 0 {
 			l.Info("Removing temporally installed packages")
 			// only if there are temp packages
 			if force, err := cmd.Flags().GetBool("force"); err != nil || !force {
@@ -69,13 +69,7 @@ can be synced to the configuration via mehr sync.
 					}
 				}
 
-				packages := make([]string, 0, len(pkgs))
-
-				for k := range pkgs {
-					packages = append(packages, k)
-				}
-
-				err, amount := manager.Remove(packages...)
+				err, amount := manager.Remove(pkgs...)
 				if err != nil {
 					l.Errorf("Failed to remove temporary packages: %w", err)
 				} else if amount > 0 {

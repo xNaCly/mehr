@@ -50,11 +50,6 @@ Errors on attempting to remove packages not found in the lock file
 				if len(packages) == 0 {
 					continue
 				}
-				pkgs := make([]string, 0, len(packages))
-				for name := range packages {
-					pkgs = append(pkgs, name)
-				}
-
 				var manager *pkgmgr.PackageManager
 				if mgr == "$" {
 					var ok bool
@@ -70,7 +65,7 @@ Errors on attempting to remove packages not found in the lock file
 						return
 					}
 				}
-				err, amount := manager.Remove(pkgs...)
+				err, amount := manager.Remove(packages...)
 				if err != nil {
 					l.Error("failed to upgrade packages", err)
 				} else if amount > 0 {

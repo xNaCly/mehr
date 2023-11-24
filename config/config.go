@@ -73,9 +73,18 @@ func ValidateConfig(c *types.Configuration) error {
 			return errors.New("No package manager found")
 		}
 	}
-	cpy := c.Packages["$"]
-	delete(c.Packages, "$")
-	c.Packages[c.PackageManager] = cpy
+	if c.Packages == nil {
+		c.Packages = make(map[string]map[string]*types.Package)
+	} else {
+		cpy := c.Packages["$"]
+		delete(c.Packages, "$")
+		if el, ok := c.Packages[c.PackageManager]; ok {
+			for k, v := range el {
+				cpy[k] = v
+			}
+		}
+		c.Packages[c.PackageManager] = cpy
+	}
 	if c.SystemConfig == nil {
 		c.SystemConfig = &types.SystemConfig{}
 	}

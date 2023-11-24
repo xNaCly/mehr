@@ -27,32 +27,58 @@ func LookUp() string {
 	return filepath.Join(confHome, "mehr", "lock.toml")
 }
 
-// return all packages permanently installed on the system
-func Permanent(config *types.Configuration, lock *types.LockFile) map[string]map[string]*types.Package {
-	perm := map[string]map[string]*types.Package{}
+func All(lock *types.LockFile) map[string][]string {
+	perm := map[string][]string{}
 	// iterate over package managers
 	for mgr, v := range lock.Packages {
-		perm[mgr] = make(map[string]*types.Package)
-		for pkgkey, pkg := range v {
-			if _, ok := config.Packages[mgr][pkgkey]; ok {
-				perm[mgr][pkgkey] = pkg
-			}
+		t := make([]string, 0, len(v))
+		for pkgkey := range v {
+			t = append(t, pkgkey)
 		}
+		perm[mgr] = t
 	}
 	return perm
 }
 
-// return all temporary installed packages on the system
-func Temporary(config *types.Configuration, lock *types.LockFile) map[string]map[string]*types.Package {
-	temp := map[string]map[string]*types.Package{}
+// return all packages permanently installed on the system
+func Permanent(config *types.Configuration, lock *types.LockFile) map[string][]string {
+	perm := map[string][]string{}
 	// iterate over package managers
 	for mgr, v := range lock.Packages {
-		temp[mgr] = make(map[string]*types.Package)
-		for pkgkey, pkg := range v {
-			if _, ok := config.Packages[mgr][pkgkey]; !ok {
-				temp[mgr][pkgkey] = pkg
+		t := make([]string, 0, len(v))
+		for pkgkey := range v {
+			if _, ok := config.Packages[mgr][pkgkey]; ok {
+				t = append(t, pkgkey)
 			}
 		}
+		perm[mgr] = t
+	}
+	return perm
+}
+
+func Len(packages map[string][]string) int {
+	r := 0
+	for _, l := range packages {
+		if len(l) == 0 {
+			continue
+		}
+		r += len(l)
+	}
+	return r
+}
+
+// return all temporary installed packages on the system
+func Temporary(config *types.Configuration, lock *types.LockFile) map[string][]string {
+	temp := map[string][]string{}
+	// iterate over package managers
+	for mgr, v := range lock.Packages {
+		t := make([]string, 0, len(v))
+		for pkgkey := range v {
+			if _, ok := config.Packages[mgr][pkgkey]; !ok {
+				t = append(t, pkgkey)
+			}
+		}
+		temp[mgr] = t
 	}
 	return temp
 }

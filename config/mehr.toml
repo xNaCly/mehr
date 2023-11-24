@@ -17,7 +17,7 @@ package-manager = "auto"
      # lock a package on a specific version, mehr will not install anything
      # higher or lower than this, throws an error if the repos of the used
      # package manager do not include the specific version
-     # version = "0.21.2"
+     version = "0.21.2"
    [package."$".neovim]
      # packages without version or url are also installed
 
@@ -27,7 +27,8 @@ package-manager = "auto"
 
  [package.cargo]
    [package.cargo.ripgrep]
-    version = "12.0.0"
+   [package.cargo.bat]
+   [package.cargo.exa]
 
 # commands are used to run executables found in $PATH of the system
 [command]

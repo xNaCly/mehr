@@ -7,7 +7,6 @@ import (
 	"github.com/xnacly/mehr/config"
 	"github.com/xnacly/mehr/lock"
 	l "github.com/xnacly/mehr/log"
-	"github.com/xnacly/mehr/types"
 )
 
 func init() {
@@ -33,7 +32,7 @@ var listCmd = &cobra.Command{
 			return
 		}
 
-		all := lock.Get().Packages
+		all := lock.All(lock.Get())
 
 		if temp, err := cmd.Flags().GetBool("temporary"); err == nil && temp {
 			printPackages(lock.Temporary(conf, lock.Get()))
@@ -47,20 +46,16 @@ var listCmd = &cobra.Command{
 	},
 }
 
-func printPackages(packages map[string]map[string]*types.Package) {
+func printPackages(packages map[string][]string) {
 	i := 1
 	for manager, pkgs := range packages {
 		if len(pkgs) == 0 {
 			continue
 		}
 		fmt.Println(manager)
-		for name, pkg := range pkgs {
+		for _, name := range pkgs {
 			fmt.Print("(", i, ") ")
-			if pkg.Version != "" {
-				fmt.Println(name + "@" + pkg.Version)
-			} else {
-				fmt.Println(name)
-			}
+			fmt.Println(name)
 			i++
 		}
 	}
