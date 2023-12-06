@@ -49,8 +49,8 @@ func (p *PackageManager) createCmd(c *types.SubCommand, packages ...string) erro
 func (p *PackageManager) Install(packages map[string]*types.Package) (error, int) {
 	pkgs := make([]string, 0)
 	for k, v := range packages {
-		if _, ok := lock.Get().Packages[k]; ok {
-			log.Warnf("Package %s@%s already installed, skipping", k, v.Version)
+		if _, ok := lock.Get().Packages[p.Name][k]; ok {
+			log.Warnf("Package %q via %q already installed, skipping", k, p.Name)
 			continue
 		}
 		if v.Version != "" {
